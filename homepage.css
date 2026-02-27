@@ -1,0 +1,6 @@
+body { font-family: Arial, sans-serif; line-height: 1.6; max-width: 800px; margin: 40px auto; padding: 20px; background-color: #f0f2f5; }
+        .profile-card { background: lavender; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .links-section { margin-top: 30px; }
+        .activity-link { display: block; background: mintcream; padding: 15px; margin: 10px 0; text-decoration: none; color: #333; border-radius: 8px; border: 1px solid #ddd; transition: 0.3s; }
+        .activity-link:hover { background: #333; color: white; transform: translateX(10px); }
+        h1, h2 { border-bottom: 2px solid #333; padding-bottom: 10px; }
