@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Interactive Personal Profile Webpage</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="ippw.css">
+</head>
+
+<body>
+  
+<div class="container">
+    <header class="profile-header">
+        <div class="img-container">
+            <img id="profile-pic" src="https://via.placeholder.com/150" alt="Profile">
+            <input type="file" id="file-input" class="hidden" accept="image/*">
+        </div>
+        
+        <div class="editable-container">
+            <h1 id="name-display"> Elmae Moreno </h1>
+            <input type="text" id="name-input" class="hidden">
+            <button class="edit-btn" onclick="editField('name')"><i class="fas fa-edit"></i></button>
+        </div>
+
+        <div class="editable-container">
+            <p id="bio-display">Practice makes progress.</p>
+            <textarea id="bio-input" class="hidden"></textarea>
+            <button class="edit-btn" onclick="editField('bio')"><i class="fas fa-edit"></i></button>
+        </div>
+    </header>
+
+    <section id="skills-section">
+        <h3><i class="fas fa-laptop-code"></i> Skills</h3>
+        <ul id="skills-list" ondragover="allowDrop(event)">
+            <li class="list-item" draggable="true" ondragstart="drag(event)">HTML</li>
+            <li class="list-item" draggable="true" ondragstart="drag(event)">CSS</li>
+            <li class="list-item" draggable="true" ondragstart="drag(event)">JavaScript</li>
+        </ul>
+        <div class="controls">
+            <input type="text" id="skill-input" class="hidden" placeholder="Type skill and press Enter">
+            <button class="btn btn-add" onclick="toggleInput('skill')"><i class="fas fa-plus"></i> Add Skill</button>
+            <button class="btn btn-del" onclick="deleteSelected('skills-list')"><i class="fas fa-trash"></i> Delete Selected</button>
+        </div>
+    </section>
+
+    <section>
+        <h3><i class="fas fa-graduation-cap"></i> Education</h3>
+        <div id="edu-container">
+            <div class="edu-item">
+                <strong class="edu-school"> Partido State University</strong><br>
+                <span class="edu-course">BS in Information Technology</span> | <span class="edu-year">A/Y 2025-2026 </span>
+            </div>
+        </div>
+    </section>
+
+    <section id="hobbies-section">
+        <h3><i class="fas fa-heart"></i> Hobbies</h3>
+        <ul id="hobbies-list" ondragover="allowDrop(event)">
+            <li class="list-item" draggable="true" ondragstart="drag(event)">Reading</li>
+            <li class="list-item" draggable="true" ondragstart="drag(event)">Listening to music </li>
+            <li class="list-item" draggable="true" ondragstart="drag(event)">Watching documentaries</li>
+        </ul>
+        <div class="controls">
+            <input type="text" id="hobby-input" class="hidden" placeholder="Type hobby and press Enter">
+            <button class="btn btn-add" onclick="toggleInput('hobby')"><i class="fas fa-plus"></i> Add Hobby</button>
+            <button class="btn btn-del" onclick="deleteSelected('hobbies-list')"><i class="fas fa-trash"></i> Delete Selected</button>
+        </div>
+    </section>
+
+    <div class="global-actions">
+        <button class="btn btn-save" onclick="saveToLocalStorage()"><i class="fas fa-save"></i> Save Profile</button>
+        <button class="btn btn-reset" onclick="resetProfile()"><i class="fas fa-undo"></i> Reset All</button>
+    </div>
+</div>
+<script src="ippw.js"></script>
+</body>
+
+</html>
