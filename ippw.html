@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Personal Profile Webpage</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --primary: #4f46e5; --bg: #f8fafc; --card: #ffffff; --text: #1e293b; --highlight: #fef08a; }
+        body { font-family: sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 20px; display: flex; justify-content: center; }
+        .container { width: 100%; max-width: 800px; background: var(--card); padding: 2rem; border-radius: 1rem; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .profile-header { text-align: center; margin-bottom: 2rem; }
+        #profile-pic { width: 150px; height: 150px; border-radius: 50%; object-fit: cover; border: 4px solid var(--primary); cursor: pointer; }
+        .editable-container { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 10px 0; }
+        .edit-btn { background: none; border: none; color: var(--primary); cursor: pointer; font-size: 1rem; padding: 5px; }
+        section { margin-bottom: 2rem; padding: 1rem; border-radius: 0.5rem; border: 1px solid #e2e8f0; }
+        ul { list-style: none; padding: 0; min-height: 20px; }
+        .list-item { background: #f1f5f9; margin: 5px 0; padding: 10px; border-radius: 5px; cursor: grab; transition: background 0.2s; position: relative; }
+        .list-item:hover { background: #cbd5e1; }
+        .list-item.selected { background: var(--highlight) !important; border: 1px solid #eab308; }
+        .edu-record { background: #f8fafc; border-left: 4px solid var(--primary); padding: 10px; margin-bottom: 10px; position: relative; border-radius: 0 5px 5px 0; }
+        .edu-controls { margin-top: 10px; display: flex; gap: 10px; }
+        .controls { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+        .btn { padding: 8px 15px; border-radius: 5px; border: none; cursor: pointer; display: flex; align-items: center; gap: 5px; font-weight: 600; }
+        .btn-add { background: #22c55e; color: white; }
+        .btn-del { background: #ef4444; color: white; }
+        .global-actions { display: flex; justify-content: center; gap: 20px; margin-top: 2rem; }
+        .btn-save { background: var(--primary); color: white; padding: 12px 25px; }
+        .btn-reset { background: #64748b; color: white; padding: 12px 25px; }
+        .hidden { display: none; }
+        input[type="text"], textarea { width: 90%; padding: 6px; border: 1px solid var(--primary); border-radius: 4px; margin: 2px 0; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header class="profile-header">
+        <img id="profile-pic" src="https://via.placeholder.com/150" alt="Profile">
+        <input type="file" id="file-input" class="hidden" accept="image/*">
+        
+        <div class="editable-container">
+            <h1 id="name-display">Elmae Moreno</h1>
+            <input type="text" id="name-input" class="hidden">
+            <button class="edit-btn" onclick="editField('name')"><i class="fas fa-edit"></i></button>
+        </div>
+        <div class="editable-container">
+            <p id="bio-display">Practice makes progress</p>
+            <textarea id="bio-input" class="hidden"></textarea>
+            <button class="edit-btn" onclick="editField('bio')"><i class="fas fa-edit"></i></button>
+        </div>
+    </header>
+
+    <section>
+        <h3>Skills</h3>
+        <ul id="skills-list" ondragover="allowDrop(event)">
+            <li class="list-item" draggable="true" ondragstart="drag(event)">HTML</li>
+        </ul>
+        <div class="controls">
+            <input type="text" id="skill-input" class="hidden" placeholder="New skill...">
+            <button class="btn btn-add" onclick="toggleInput('skill')">Add Skill</button>
+            <button class="btn btn-del" onclick="deleteItems('skills-list', 'Skill')">Delete Selected</button>
+        </div>
+    </section>
+
+    <section id="education-section">
+        <h3>Education</h3>
+        <div id="education-list"></div>
+        <button class="btn btn-add" onclick="addEducationRecord()"><i class="fas fa-plus"></i> Add Education</button>
+    </section>
+
+    <section>
+        <h3>Hobbies</h3>
+        <ul id="hobbies-list" ondragover="allowDrop(event)">
+            <li class="list-item" draggable="true" ondragstart="drag(event)">Reading</li>
+        </ul>
+        <div class="controls">
+            <input type="text" id="hobby-input" class="hidden" placeholder="New hobby...">
+            <button class="btn btn-add" onclick="toggleInput('hobby')">Add Hobby</button>
+            <button class="btn btn-del" onclick="deleteItems('hobbies-list', 'Hobby')">Delete Selected</button>
+        </div>
+    </section>
+
+    <div class="global-actions">
+        <button class="btn btn-save" onclick="saveData()">Save Profile</button>
+        <button class="btn btn-reset" onclick="resetAll()">Reset All</button>
+    </div>
+</div>
+
+<script>
+    window.onload = () => {
+        loadData();
+        setupInputHandlers();
+    };
+
+    // --- PROFILE PICTURE ---
+    const profilePic = document.getElementById('profile-pic');
+    const fileInput = document.getElementById('file-input');
+    profilePic.onclick = () => fileInput.click();
+    fileInput.onchange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                profilePic.src = event.target.result;
+                console.log("Profile picture updated");
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    // --- NAME & BIO ---
+    function editField(field) {
+        const display = document.getElementById(`${field}-display`);
+        const input = document.getElementById(`${field}-input`);
+        display.classList.add('hidden');
+        input.classList.remove('hidden');
+        input.value = display.innerText;
+        input.focus();
+
+        const save = () => {
+            if (!input.classList.contains('hidden')) {
+                display.innerText = input.value;
+                display.classList.remove('hidden');
+                input.classList.add('hidden');
+                console.log(`${field.charAt(0).toUpperCase() + field.slice(1)} edited`);
+            }
+        };
+        input.onblur = save;
+        input.onkeydown = (e) => { if (e.key === 'Enter') save(); };
+    }
+
+    // --- EDUCATION ---
+    function addEducationRecord(school="School", course="Course", year="Year") {
+        const list = document.getElementById('education-list');
+        const div = document.createElement('div');
+        div.className = 'edu-record';
+        div.innerHTML = `
+            <div class="edu-content">
+                <strong class="edu-school-display">${school}</strong><br>
+                <span class="edu-course-display">${course}</span><br>
+                <span class="edu-year-display">${year}</span>
+            </div>
+            <div class="edu-edit-fields hidden">
+                <input type="text" class="edu-school-input" placeholder="School">
+                <input type="text" class="edu-course-input" placeholder="Course">
+                <input type="text" class="edu-year-input" placeholder="Year">
+            </div>
+            <div class="edu-controls">
+                <button class="edit-btn" onclick="editEducation(this)"><i class="fas fa-edit"></i> Edit</button>
+                <button class="edit-btn" style="color:red" onclick="removeEducation(this)"><i class="fas fa-trash"></i> Remove</button>
+            </div>`;
+        list.appendChild(div);
+    }
+
+    function editEducation(btn) {
+        const record = btn.closest('.edu-record');
+        const content = record.querySelector('.edu-content');
+        const fields = record.querySelector('.edu-edit-fields');
+        const inputs = fields.querySelectorAll('input');
+
+        content.classList.add('hidden');
+        fields.classList.remove('hidden');
+        inputs[0].value = record.querySelector('.edu-school-display').innerText;
+        inputs[1].value = record.querySelector('.edu-course-display').innerText;
+        inputs[2].value = record.querySelector('.edu-year-display').innerText;
+        inputs[0].focus();
+
+        const saveEdu = () => {
+            if (!fields.classList.contains('hidden')) {
+                record.querySelector('.edu-school-display').innerText = inputs[0].value;
+                record.querySelector('.edu-course-display').innerText = inputs[1].value;
+                record.querySelector('.edu-year-display').innerText = inputs[2].value;
+                fields.classList.add('hidden');
+                content.classList.remove('hidden');
+                console.log("Education edited");
+            }
+        };
+
+        inputs.forEach(inp => {
+            inp.onkeydown = (e) => { if (e.key === 'Enter') saveEdu(); };
+            inp.onblur = (e) => {
+                setTimeout(() => { if (!fields.contains(document.activeElement)) saveEdu(); }, 150);
+            };
+        });
+    }
+
+    function removeEducation(btn) {
+        btn.closest('.edu-record').remove();
+        console.log("Education record removed");
+    }
+
+    // --- SKILLS & HOBBIES ---
+    function toggleInput(type) {
+        const input = document.getElementById(`${type}-input`);
+        input.classList.toggle('hidden');
+        if (!input.classList.contains('hidden')) input.focus();
+    }
+
+    function setupInputHandlers() {
+        // Skill Logic
+        const sInp = document.getElementById('skill-input');
+        sInp.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && sInp.value.trim() !== '') {
+                createListItem('skills-list', sInp.value);
+                console.log(`Skill added: ${sInp.value}`);
+                sInp.value = ''; sInp.classList.add('hidden');
+            }
+        });
+
+        // Hobby Logic
+        const hInp = document.getElementById('hobby-input');
+        hInp.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && hInp.value.trim() !== '') {
+                createListItem('hobbies-list', hInp.value);
+                console.log(`Hobby added: ${hInp.value}`);
+                hInp.value = ''; hInp.classList.add('hidden');
+            }
+        });
+    }
+
+    function createListItem(listId, text) {
+        const li = document.createElement('li');
+        li.className = 'list-item';
+        li.draggable = true;
+        li.innerText = text;
+        li.ondragstart = drag;
+        li.onclick = (e) => toggleSelect(e, li, listId);
+        document.getElementById(listId).appendChild(li);
+    }
+
+    function toggleSelect(e, item, listId) {
+        if (!e.ctrlKey) {
+            document.querySelectorAll(`#${listId} .list-item`).forEach(i => {
+                if (i !== item) i.classList.remove('selected');
+            });
+        }
+        item.classList.toggle('selected');
+        const type = listId.includes('skill') ? 'Skill' : 'Hobby';
+        if (item.classList.contains('selected')) console.log(`${type} selected`);
+    }
+
+    function deleteItems(listId, type) {
+        const selected = document.querySelectorAll(`#${listId} .selected`);
+        if (selected.length > 0) {
+            selected.forEach(el => el.remove());
+            console.log(`${type} deleted`);
+        }
+    }
+
+    // --- DRAG AND DROP ---
+    let draggedItem = null;
+    function drag(e) { draggedItem = e.target; }
+    function allowDrop(e) {
+        e.preventDefault();
+        const list = e.currentTarget;
+        const afterElement = getDragAfterElement(list, e.clientY);
+        if (!afterElement) list.appendChild(draggedItem);
+        else list.insertBefore(draggedItem, afterElement);
+    }
+
+    function getDragAfterElement(container, y) {
+        const draggableElements = [...container.querySelectorAll('.list-item:not(.dragging)')];
+        let closestElement = null;
+        let closestOffset = -9999;
+        for (const child of draggableElements) {
+            const box = child.getBoundingClientRect();
+            const offset = y - box.top - box.height / 2;
+            if (offset < 0 && offset > closestOffset) {
+                closestOffset = offset;
+                closestElement = child;
+            }
+        }
+        return closestElement;
+    }
+
+    // --- STORAGE ---
+    function saveData() {
+        const data = {
+            pic: profilePic.src,
+            name: document.getElementById('name-display').innerText,
+            bio: document.getElementById('bio-display').innerText,
+            skills: [...document.querySelectorAll('#skills-list li')].map(li => li.innerText),
+            hobbies: [...document.querySelectorAll('#hobbies-list li')].map(li => li.innerText),
+            education: [...document.querySelectorAll('.edu-record')].map(rec => ({
+                school: rec.querySelector('.edu-school-display').innerText,
+                course: rec.querySelector('.edu-course-display').innerText,
+                year: rec.querySelector('.edu-year-display').innerText
+            }))
+        };
+        localStorage.setItem('profileDB_v3', JSON.stringify(data));
+        console.log("Changes saved to local storage");
+        alert("Saved!");
+    }
+
+    function loadData() {
+        const saved = localStorage.getItem('profileDB_v3');
+        if (saved) {
+            const data = JSON.parse(saved);
+            profilePic.src = data.pic;
+            document.getElementById('name-display').innerText = data.name;
+            document.getElementById('bio-display').innerText = data.bio;
+            document.getElementById('skills-list').innerHTML = '';
+            document.getElementById('hobbies-list').innerHTML = '';
+            data.skills.forEach(s => createListItem('skills-list', s));
+            data.hobbies.forEach(h => createListItem('hobbies-list', h));
+            if (data.education) {
+                document.getElementById('education-list').innerHTML = '';
+                data.education.forEach(e => addEducationRecord(e.school, e.course, e.year));
+            }
+        } else {
+            addEducationRecord("Example University", "BS IT", "2022-2026");
+        }
+    }
+
+    function resetAll() {
+        if (confirm("Reset everything?")) {
+            localStorage.clear();
+            location.reload();
+        }
+    }
+</script>
+</body>
+</html>
