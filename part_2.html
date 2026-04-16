@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Table Comparison- Part 2</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; padding: 20px; background-color: #f8fafc; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        
+        .form-section { background: #f1f5f9; padding: 20px; border-radius: 6px; margin-bottom: 20px; }
+        .input-group { display: flex; gap: 10px; margin-bottom: 15px; }
+        input { flex: 1; padding: 10px; border: 1px solid #cbd5e1; border-radius: 4px; }
+        
+        .button-group { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
+        button { padding: 10px 15px; cursor: pointer; border: none; border-radius: 4px; font-weight: 600; transition: opacity 0.2s; }
+        
+        .btn-innerHTML { background-color: #3b82f6; color: white; }
+        .btn-DOM { background-color: #10b981; color: white; }
+        .btn-perf { background-color: #f59e0b; color: white; }
+        .btn-clear { background-color: #64748b; color: white; }
+        .btn-delete { background-color: #ef4444; color: white; padding: 5px 10px; font-size: 0.8rem; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; text-align: left; border: 1px solid #e2e8f0; }
+        th { background-color: #f8fafc; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Product Table Comparison</h2>
+
+    <div class="form-section">
+        <div class="input-group">
+            <input type="text" id="prodName" placeholder="Product Name">
+            <input type="number" id="prodPrice" placeholder="Price">
+            <input type="text" id="prodCat" placeholder="Category">
+        </div>
+        <div class="button-group">
+            <button class="btn-innerHTML" onclick="addSingleInnerHTML()">Add via innerHTML</button>
+            <button class="btn-DOM" onclick="addSingleDOM()">Add via Direct DOM</button>
+        </div>
+    </div>
+
+    <div class="button-group">
+        <button class="btn-clear" onclick="clearTable()">Clear Table</button>
+        <button class="btn-perf" onclick="testInnerHTMLPerformance()">Test innerHTML (100 rows)</button>
+        <button class="btn-perf" onclick="testDOMPerformance()">Test DOM (100 rows)</button>
+    </div>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Product Name</th>
+                <th>Price</th>
+                <th>Category</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+    </table>
+</div>
+
+<script>
+    const tableBody = document.getElementById("tableBody");
+
+    // Helper: Product Generator
+    function generateManyProducts(count) {
+        let products = [];
+        for (let i = 1; i <= count; i++) {
+            products.push({
+                name: "Product " + i,
+                price: Math.floor(Math.random() * 100),
+                category: "Category " + (i % 5 + 1)
+            });
+        }
+        return products;
+    }
+
+    function clearTable() {
+        tableBody.innerHTML = "";
+    }
+
+    // --- 1. DYNAMIC ADD: innerHTML ---
+    function addSingleInnerHTML() {
+        const name = document.getElementById("prodName").value;
+        const price = document.getElementById("prodPrice").value;
+        const cat = document.getElementById("prodCat").value;
+
+        // Security Risk: innerHTML parses the string as HTML
+        tableBody.innerHTML += `
+            <tr>
+                <td>${name}</td>
+                <td>$${price}</td>
+                <td>${cat}</td>
+                <td><button class="btn-delete" onclick="this.closest('tr').remove()">Delete</button></td>
+            </tr>`;
+    }
+
+    // --- 2. DYNAMIC ADD: Direct DOM ---
+    function addSingleDOM() {
+        const name = document.getElementById("prodName").value;
+        const price = document.getElementById("prodPrice").value;
+        const cat = document.getElementById("prodCat").value;
+
+        const tr = document.createElement("tr");
+        
+        // Secure: textContent treats everything as plain text
+        const tdName = document.createElement("td"); tdName.textContent = name;
+        const tdPrice = document.createElement("td"); tdPrice.textContent = "$" + price;
+        const tdCat = document.createElement("td"); tdCat.textContent = cat;
+        
+        const tdAction = document.createElement("td");
+        const delBtn = document.createElement("button");
+        delBtn.textContent = "Delete";
+        delBtn.className = "btn-delete";
+        delBtn.onclick = () => tr.remove();
+        
+        tdAction.appendChild(delBtn);
+        tr.append(tdName, tdPrice, tdCat, tdAction);
+        tableBody.appendChild(tr);
+    }
+
+    // --- 3. PERFORMANCE TESTS ---
+    function testInnerHTMLPerformance() {
+        const products = generateManyProducts(100);
+        clearTable();
+
+        console.time("innerHTML");
+        let htmlBuffer = "";
+        products.forEach(p => {
+            htmlBuffer += `<tr>
+                <td>${p.name}</td>
+                <td>$${p.price}</td>
+                <td>${p.category}</td>
+                <td><button class="btn-delete" onclick="this.closest('tr').remove()">Delete</button></td>
+            </tr>`;
+        });
+        tableBody.innerHTML = htmlBuffer;
+        console.timeEnd("innerHTML");
+    }
+
+    function testDOMPerformance() {
+        const products = generateManyProducts(100);
+        clearTable();
+
+        console.time("DOM");
+        const fragment = document.createDocumentFragment();
+        products.forEach(p => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `<td>${p.name}</td><td>$${p.price}</td><td>${p.category}</td>`;
+            
+            const tdAction = document.createElement("td");
+            const btn = document.createElement("button");
+            btn.textContent = "Delete";
+            btn.className = "btn-delete";
+            btn.onclick = () => tr.remove();
+            
+            tdAction.appendChild(btn);
+            tr.appendChild(tdAction);
+            fragment.appendChild(tr);
+        });
+        tableBody.appendChild(fragment);
+        console.timeEnd("DOM");
+    }
+</script>
+
+</body>
+</html>
