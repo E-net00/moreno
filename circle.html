@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Canvas Shape Editor</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: lightblue;
+    margin: 0;
+    padding: 20px;
+    animation: bgFade 1s ease-in;
+    
+
+#profile-header {
+    background: lavenderblush;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    width: 80%;
+    max-width: 800px;
+    margin-bottom: 20px;
+    
+}
+
+.canvas-container {
+    text-align: center;
+}
+
+/* Canvas styling: centered with a visible border */
+#mainCanvas {
+    background-color: white;
+    border: 2px solid #333;
+    display: block;
+    margin: 0 auto;
+    cursor: crosshair;
+}
+
+.instructions {
+    margin-top: 10px;
+    color: black;
+    font-size: 0.9em;
+}
+</style>
+</head>
+<body>
+
+    <header id="profile-header">
+        <h1>Student Profile</h1>
+        <p><strong>Name:</strong> Elmae Moreno</p>
+        <p><strong>Sex:</strong> Female</p>
+        <p><strong>Address:</strong> Loho, Lagonoy, Camarines Sur</p>
+        <p><strong>Course, Year, & Section:</strong> BSIT-2D</p>
+        <p><strong>School:</strong> Partido State University</p>
+        <p><strong>Semester and Academic Year:</strong> 2nd Semester AY 2025-2026</p>
+        <p><strong>Subject:</strong> PF2 Event-Driven Programming</p>
+        <p><strong>Instructor:</strong> Arjay F. Abio MIT, LPT</p>
+    </header>
+
+    <hr>
+
+    <div class="canvas-container">
+        <canvas id="mainCanvas" width="600" height="400"></canvas>
+        <p class="instructions">
+            Click to add | Drag to move | Scroll to resize(up(+),down(-)) | Delete key to remove
+        </p>
+    </div>
+
+    <script src="circle.js"></script>
+</body>
+</html>
