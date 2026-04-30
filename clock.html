@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Timer Application</title>
+    <style>
+    body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #1a1a1a;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.timer-container {
+    text-align: center;
+    background: #2d2d2d;
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+#display {
+    font-size: 4rem;
+    font-family: 'Courier New', Courier, monospace;
+    margin: 20px 0;
+    color: #00ffcc;
+}
+
+#status-indicator {
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #ffcc00;
+}
+
+.controls button {
+    padding: 10px 20px;
+    margin: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    transition: background 0.3s ease;
+}
+
+/* Hover Effects */
+#startBtn { background-color: #28a745; color: white; }
+#startBtn:hover { background-color: #218838; transform: scale(1.05); }
+
+#pauseBtn { background-color: #ffc107; color: black; }
+#pauseBtn:hover { background-color: #e0a800; transform: scale(1.05); }
+
+#resetBtn { background-color: #dc3545; color: white; }
+#resetBtn:hover { background-color: #c82333; transform: scale(1.05); }
+    </style>
+</head>
+<body>
+
+    <div class="timer-container">
+        <h1>Digital Timer</h1>
+        <div id="status-indicator">Status: Reset</div>
+        <div id="display">00:00:00</div>
+        
+        <div class="controls">
+            <button id="startBtn">Start (S)</button>
+            <button id="pauseBtn">Pause (P)</button>
+            <button id="resetBtn">Reset (R)</button>
+        </div>
+    </div>
+
+    <script>
+        // Variable declarations
+let timer;
+let seconds = 0;
+let isRunning = false;
+
+// DOM Elements
+const display = document.getElementById('display');
+const statusIndicator = document.getElementById('status-indicator');
+const startBtn = document.getElementById('startBtn');
+const pauseBtn = document.getElementById('pauseBtn');
+const resetBtn = document.getElementById('resetBtn');
+
+// Function to format time: 00:00:00
+const formatTime = () => {
+    let hrs = Math.floor(seconds / 3600);
+    let mins = Math.floor((seconds % 3600) / 60);
+    let secs = seconds % 60;
+
+    let displayHrs = hrs < 10 ? "0" + hrs : hrs;
+    let displayMins = mins < 10 ? "0" + mins : mins;
+    let displaySecs = secs < 10 ? "0" + secs : secs;
+
+    display.textContent = `${displayHrs}:${displayMins}:${displaySecs}`;
+};
+
+// Start Logic
+const startTimer = () => {
+    if (!isRunning) {
+        isRunning = true;
+        statusIndicator.textContent = "Status: Running";
+        timer = setInterval(() => {
+            seconds++;
+            formatTime();
+        }, 1000);
+    }
+};
+
+// Pause Logic
+const pauseTimer = () => {
+    isRunning = false;
+    statusIndicator.textContent = "Status: Paused";
+    clearInterval(timer);
+};
+
+// Reset Logic
+const resetTimer = () => {
+    isRunning = false;
+    clearInterval(timer);
+    seconds = 0;
+    formatTime();
+    statusIndicator.textContent = "Status: Reset";
+};
+
+// Event Listeners using Anonymous Functions
+startBtn.addEventListener('click', function() {
+    startTimer();
+});
+
+pauseBtn.addEventListener('click', function() {
+    pauseTimer();
+});
+
+resetBtn.addEventListener('click', function() {
+    resetTimer();
+});
+
+// Keyboard Shortcuts (S, P, R)
+document.addEventListener('keydown', function(event) {
+    const key = event.key.toLowerCase();
+    if (key === 's') startTimer();
+    if (key === 'p') pauseTimer();
+    if (key === 'r') resetTimer();
+});
+    </script>
+</body>
+</html>
