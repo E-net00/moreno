@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BIMS - Administration Panel</title>
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <div class="admin-wrapper">
+        <header class="admin-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h1 style="margin: 0; font-size: 1.75rem;">BIMS Admin Dashboard</h1>
+                <p style="margin: 5px 0 0 0; color: #94a3b8;">Centralized Filing & Certificate Verification Desk</p>
+            </div>
+            <button id="btnAdminLogout" style="background-color: #dc2626; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 600; cursor: pointer;">Secure Logout</button>
+        </header>
+
+        <!-- Dynamic Workspace Panel Tabs Navigation -->
+        <nav class="dashboard-tabs no-print">
+            <button id="tabOpDesk" class="tab-btn active" onclick="switchAdminTab('Operations')">📋 Requests & Operations</button>
+            <button id="tabRegistry" class="tab-btn" onclick="switchAdminTab('Registry')">👥 Resident Profiles Registry</button>
+        </nav>
+
+        <!-- VIEW PANEL 1: CLEARANCE OPERATIONS DESK -->
+        <div id="viewOperations" class="tab-view active-view">
+            <div class="dashboard-grid">
+                <section class="admin-card">
+                    <h2>Pending Certificate Requests</h2>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Resident Name</th>
+                                    <th>Requested Document</th>
+                                    <th>Purpose</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminQueueBody">
+                                <!-- Injected rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section class="admin-card">
+                    <h2>Administrative Records Log</h2>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Resident</th>
+                                    <th>Document</th>
+                                    <th>Final Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminLogsBody">
+                                <!-- Dynamic log records -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- VIEW PANEL 2: RESIDENT INFORMATION PROFILE MANAGEMENT -->
+        <div id="viewRegistry" class="tab-view">
+            <div class="registry-grid">
+                <!-- Data Profiles Registry Editor Box Form -->
+                <section class="admin-card text-entry-panel">
+                    <h2 id="formPanelTitle">Register New Resident Profile</h2>
+                    <form id="profileForm">
+                        <input type="hidden" id="profileId" value="">
+                        
+                        <div class="form-group">
+                            <label for="resName">Resident Full Name</label>
+                            <input type="text" id="resName" required placeholder="e.g., Juan Dela Cruz">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="resBirthday">Date of Birth</label>
+                            <input type="date" id="resBirthday" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="resAddress">Complete Address</label>
+                            <input type="text" id="resAddress" required placeholder="e.g., Purok, Street, House No.">
+                        </div>
+
+                        <div style="display:flex; gap:10px; margin-top:15px;">
+                            <button type="submit" id="btnSaveProfile" class="btn" style="background-color:#2563eb; color:white; flex:2; padding:10px; font-weight:bold;">Save Record</button>
+                            <button type="button" id="btnClearForm" class="btn" onclick="resetProfileForm()" style="background-color:#64748b; color:white; flex:1; padding:10px;">Clear</button>
+                        </div>
+                    </form>
+                </section>
+
+                <!-- Data Presentation Table List Box -->
+                <section class="admin-card record-list-panel">
+                    <h2>Active Structural Resident Records Index</h2>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Full Name</th>
+                                    <th>Date of Birth</th>
+                                    <th>Address</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="registryTableBody">
+                                <!-- Dynamic profile indices entries tracking lists rows go here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- PRINT PREVIEW MODAL OVERLAY -->
+    <div id="printModal" class="modal-overlay">
+        <div class="modal-controls no-print">
+            <button class="btn-print-action" onclick="triggerPrint()">🖨️ Print Document</button>
+            <button class="btn-close-action" onclick="closePrintModal()">❌ Close Preview</button>
+        </div>
+        
+        <div id="certificateCanvas" class="print-sheet">
+            <div class="cert-header">
+                <h3>REPUBLIC OF THE PHILIPPINES</h3>
+                <h4>PROVINCE OF CAMARINES SUR</h4>
+                <h5>BARANGAY ADMINISTRATIVE OFFICE</h5>
+            </div>
+            
+            <div class="cert-title">
+                <h1 id="certTitleText">OFFICIAL CERTIFICATION</h1>
+            </div>
+
+            <div class="cert-body">
+                <p><strong>TO WHOM IT MAY CONCERN:</strong></p>
+                <p class="cert-indent">
+                    This is to certify that <strong id="certResidentName">JUAN DELA CRUZ</strong>, of legal age, 
+                    is a bona fide resident of this Barangay with a clean standing record in our community profiling index.
+                </p>
+                <p class="cert-indent">
+                    Based on our administrative records system, this document is officially issued upon the request of the 
+                    aforementioned resident for the explicit purpose of: <strong id="certPurpose">JOB APPLICATION</strong>.
+                </p>
+                <p class="cert-indent">
+                    Given this <span id="certDay">5th</span> day of <span id="certMonthYear">October 2026</span> at the office of the Barangay Administration.
+                </p>
+            </div>
+
+            <div class="cert-footer">
+                <div class="signature-line">
+                    <div class="line"></div>
+                    <p><strong>HON. BARANGAY CHAIRMAN</strong></p>
+                    <p class="subtext">Presiding Officer</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="bims-core.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BIMS - Resident Portal</title>
+    <link rel="stylesheet" href="resident.css">
+</head>
+<body>
+    <div class="container">
+        <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid var(--border); padding-bottom: 15px;">
+            <div>
+                <h1 style="margin: 0; color: var(--primary);">Barangay Information Management System</h1>
+                <p style="margin: 5px 0 0 0; color: #64748b;">Resident Document Request Portal</p>
+            </div>
+            <button id="btnLogout" style="background-color: #64748b; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 600; cursor: pointer;">Logout</button>
+        </header>
+
+        <main class="portal-grid">
+            <section class="card form-section">
+                <h2>Request a Certificate</h2>
+                <form id="requestForm">
+                    <div class="form-group">
+                        <label for="fullName">Full Name</label>
+                        <input type="text" id="fullName" required placeholder="Juan Dela Cruz">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="documentType">Document Type</label>
+                        <select id="documentType" required>
+                            <option value="" disabled selected>Select a certificate...</option>
+                            <option value="Barangay Clearance">Barangay Clearance</option>
+                            <option value="Certificate of Indigency">Certificate of Indigency</option>
+                            <option value="Certificate of Residency">Certificate of Residency</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="purpose">Purpose</label>
+                        <input type="text" id="purpose" required placeholder="e.g., Job Application, Financial Assistance">
+                    </div>
+
+                    <button type="submit" class="btn-submit">Submit Request</button>
+                </form>
+            </section>
+
+            <section class="card tracking-section">
+                <h2>Your Requests & Status</h2>
+                <div class="table-container">
+                    <table id="trackingTable">
+                        <thead>
+                            <tr>
+                                <th>Date Requested</th>
+                                <th>Document Type</th>
+                                <th>Purpose</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="trackingBody">
+                            <!-- Dynamic rows -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <script src="bims-core.js"></script>
+    <script src="resident.js"></script>
+</body>
+</html>

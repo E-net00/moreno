@@ -1,0 +1,147 @@
+:root {
+    --admin-primary: #0f172a;
+    --success: #16a34a;
+    --danger: #dc2626;
+    --bg-admin: #f1f5f9;
+    --border: #cbd5e1;
+}
+
+body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: var(--bg-admin);
+    color: #334155;
+    margin: 0;
+    padding: 20px;
+}
+
+.admin-wrapper {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.admin-header {
+    background-color: var(--admin-primary);
+    color: white;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+/* Tab Layout Selectors Styles */
+.dashboard-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+.tab-btn {
+    padding: 12px 24px;
+    font-size: 1rem;
+    font-weight: 600;
+    background-color: #cbd5e1;
+    color: #475569;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.tab-btn.active {
+    background-color: #2563eb;
+    color: white;
+}
+.tab-view {
+    display: none;
+}
+.active-view {
+    display: block;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 25px;
+}
+@media (min-width: 1024px) {
+    .dashboard-grid { grid-template-columns: 3fr 2fr; }
+}
+
+/* Registry Tab Side-by-Side Split View Configuration */
+.registry-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 25px;
+}
+@media (min-width: 768px) {
+    .registry-grid { grid-template-columns: 1fr 2fr; }
+}
+
+.admin-card {
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+h2 {
+    margin-top: 0;
+    font-size: 1.2rem;
+    color: var(--admin-primary);
+    border-bottom: 2px solid #f1f5f9;
+    padding-bottom: 10px;
+}
+
+.form-group { margin-bottom: 15px; }
+.form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 5px; color: #475569; }
+.form-group input { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; box-sizing: border-box; }
+
+.table-container { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 0.95rem; }
+th { background-color: #f8fafc; color: #475569; }
+
+.btn { border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 0.85rem; margin-right: 5px; }
+.btn-approve { background-color: #dcfce7; color: var(--success); }
+.btn-approve:hover { background-color: var(--success); color: white; }
+.btn-reject { background-color: #fee2e2; color: var(--danger); }
+.btn-reject:hover { background-color: var(--danger); color: white; }
+.btn-edit { background-color: #fef3c7; color: #d97706; }
+.btn-edit:hover { background-color: #d97706; color: white; }
+
+.status-text { font-weight: 600; }
+.text-approved { color: var(--success); }
+.text-rejected { color: var(--danger); }
+
+/* --- MODAL DISPLAY & CERTIFICATE CANVAS OVERLAYS --- */
+.modal-overlay {
+    display: none; position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-color: rgba(15, 23, 42, 0.85); z-index: 1000;
+    overflow-y: auto; padding: 40px 20px; box-sizing: border-box;
+}
+.modal-controls { max-width: 800px; margin: 0 auto 15px auto; display: flex; justify-content: flex-end; gap: 10px; }
+.btn-print-action { background-color: #2563eb; color: white; border: none; padding: 10px 20px; font-weight: bold; border-radius: 6px; cursor: pointer; }
+.btn-close-action { background-color: #64748b; color: white; border: none; padding: 10px 20px; font-weight: bold; border-radius: 6px; cursor: pointer; }
+.print-sheet {
+    background-color: #ffffff; max-width: 800px; min-height: 1000px; margin: 0 auto; padding: 60px; box-sizing: border-box;
+    border: 1px solid #94a3b8; box-shadow: 0 10px 25px rgba(0,0,0,0.3); color: #000000; position: relative; border-top: 15px solid #1e3a8a;
+}
+.cert-header { text-align: center; line-height: 1.4; border-bottom: 2px double #000000; padding-bottom: 15px; margin-bottom: 40px; }
+.cert-header h3 { margin: 0; font-size: 0.95rem; letter-spacing: 2px; }
+.cert-header h4 { margin: 2px 0; font-size: 1.1rem; }
+.cert-header h5 { margin: 0; font-size: 1rem; color: #475569; }
+.cert-title { text-align: center; margin: 50px 0; }
+.cert-title h1 { font-size: 2.2rem; text-transform: uppercase; letter-spacing: 3px; text-decoration: underline; margin: 0; }
+.cert-body { font-size: 1.15rem; line-height: 1.8; text-align: justify; margin-bottom: 80px; }
+.cert-indent { text-indent: 50px; margin-top: 25px; }
+.cert-footer { display: flex; justify-content: flex-end; margin-top: 80px; }
+.signature-line { text-align: center; width: 250px; }
+.signature-line .line { border-top: 1px solid #000000; margin-bottom: 5px; }
+.signature-line p { margin: 0; font-size: 0.95rem; }
+.signature-line .subtext { color: #475569; font-size: 0.85rem; }
+
+@media print {
+    body * { visibility: hidden; }
+    .modal-overlay, #printModal, #certificateCanvas, #certificateCanvas * { visibility: visible; }
+    #printModal { position: absolute; left: 0; top: 0; width: 100%; background: none; padding: 0; margin: 0; }
+    .print-sheet { border: none; box-shadow: none; padding: 0; margin: 0; width: 100%; max-width: 100%; }
+    .no-print { display: none !important; }
+}
